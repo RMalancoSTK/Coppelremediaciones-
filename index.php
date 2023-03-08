@@ -1,21 +1,25 @@
 <?php
+session_start();
+require_once 'autoload.php';
+
+require_once("config/parameters.php");
 require_once("config/config.php");
-$url = explode("/",URL);
-require_once("routes/router.php");
-if($url[0] == "" && $url[1] == ""){
-     header("location: login/login");
+
+$url = explode("/", URL);
+
+if ($url[0] == "" && $url[1] == "") {
+    Utils::validateSession();
+    header(LOCATION_DASHBOARD);
 }
+
 $routes = new Router();
-$peticion = $_SERVER["REQUEST_METHOD"];
-if($peticion == "GET"){
+
+$method = $_SERVER["REQUEST_METHOD"];
+
+if ($method == "GET") {
     $datos = $_GET;
-}else{
+} else {
     $datos = $_POST;
 }
+
 $routes->run($datos);
-
-
-// require_once("controllers/loginController.php");
-// $inc = new LoginController();
-
-?>

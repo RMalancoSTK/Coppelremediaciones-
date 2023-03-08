@@ -1,163 +1,177 @@
-$(document).ready(function () {
-  var obj = {};
-  $(".editar").click(function () {
-    var activo = "",
-      inactivo = "";
-    var id = $(this).data("id");
-    var htmlNombre = $(".nombreAps" + id).html();
-    var htmlEstatus = $(".estatusAps" + id).html();
-    var color = $(".estatusAps" + id).data("color");
+"use strict";
 
-    $(".nombreAps" + id).html(
-      '<input name="editarNombre' +
-        id +
-        '" class="editarNombre' +
-        id +
-        '" value ="' +
-        htmlNombre +
-        '"/>'
+$(function () {
+  apsTable();
+  document
+    .getElementById("btnNuevo")
+    .addEventListener(
+      "click",
+      limpiarFormulario,
+      (document.getElementById("modalTitle").innerHTML = "Nuevo APS")
     );
-    $(".estatusAps" + id).html(
-      '<input name="editarEstatus' +
-        id +
-        '" class= "editarEstatus' +
-        id +
-        '" value = "' +
-        htmlEstatus +
-        '"/>'
-    );
-    $(".estatusAps" + id).removeClass(color);
-
-    if (htmlEstatus == "ACTIVO") {
-      activo = "selected";
-    } else {
-      inactivo = "selected";
-    }
-
-    $(".estatusAps" + id).html(
-      '<select name="guardarEstatus' +
-        id +
-        '" class="guardarEstatus' +
-        id +
-        '"> <option value="1" ' +
-        activo +
-        '>ACTIVO</option><option value="0" ' +
-        inactivo +
-        ">INACTIVO</option></select>"
-    );
-    $(".editar_acciones_" + id).hide();
-    $(".editar_acciones_cancelar_" + id).removeAttr("style");
-  });
-
-  $(".cancelar").click(function () {
-    var id = $(this).data("id");
-    var htmlNombre = $(this).data("nombre");
-    //var htmlEstatus = $(".estatusAps"+id).html();
-    var htmlEstatus = $(this).data("estatus");
-    var color = $(this).data("color");
-
-    $(".nombreAps" + id).html(htmlNombre);
-    $(".estatusAps" + id).html(htmlEstatus);
-    $(".estatusAps" + id).addClass(color);
-    $(".editar_acciones_" + id).show();
-    $(".editar_acciones_cancelar_" + id).hide();
-  });
-
-  $(".save").click(function () {
-    event.preventDefault();
-    var id = $(this).data("id");
-    var nombre = $(".editarNombre" + id).val();
-    var estatus = $(".guardarEstatus" + id).val();
-
-    //alert(id, estatus);
-
-    if (nombre != "") {
-      obj.url = "../aps/edit";
-      obj.data = { id: id, nombre: nombre, estatus: estatus };
-      obj.type = "POST";
-      obj.accion = "update";
-      $(".nombreAps" + id).html(nombre);
-      if (estatus == 1) {
-        $(".estatusAps" + id).html("ACTIVO");
-        $(".estatusAps" + id).addClass("bg-success");
-      } else {
-        $(".estatusAps" + id).html("INACTIVO");
-        $(".estatusAps" + id).addClass("bg-warning");
-      }
-      $(".editar_acciones_" + id).show();
-      $(".editar_acciones_cancelar_" + id).hide();
-      peticionAjax(obj);
-    } else {
-      $(".mensaje_sistema").html("Favor de llenar el nombre");
-      $("#mensajeModal").modal("show");
-    }
-  });
-
-  $(".eliminar").click(function () {
-    var id = $(this).data("id");
-    obj.url = "../aps/delete";
-    obj.data = { idAps: id };
-    obj.type = "POST";
-    obj.accion = "delete";
-    obj.id = id;
-    peticionAjax(obj);
-  });
-
-  $(".agregarNuevo").click(function () {
-    $(".crearModal").modal("show");
-  });
-
-  $(".saveModal").click(function () {
-    event.preventDefault();
-    var nombre = $("#imputNombre").val();
-    var datos = $(".frmGuardar").serialize();
-    if (nombre != "") {
-      obj.url = "../aps/save";
-      obj.data = datos;
-      obj.type = "POST";
-      obj.accion = "save";
-
-      peticionAjax(obj);
-    } else {
-      alert("No hay nombre");
-    }
-  });
-
-  $(".cerrarModal").click(function () {
-    $(".crearModal").modal("hide");
-  });
 });
 
-function peticionAjax(datos) {
+function apsTable() {
+  if (document.getElementById("apsTable")) {
+    const acciones = (data, type, row) => {
+      if (row.estatus_aps == `ACTIVO`) {
+        return `
+        <div class="btn-group" role="group" aria-label="Basic example">
+          <button type="button" class="btn btn-primary btn-sm mr-1" data-toggle="modal" data-target="#apsModal" onclick="editarRol(${row.id_aps})"><i class="fas fa-edit"></i></button>
+          <button type="button" class="btn btn-danger btn-sm mr-1" onclick="desactivarAps(${row.id_aps})"><i class="fas fa-trash"></i></button>
+        </div>
+        `;
+      } else {
+        return `
+        <div class="btn-group" role="group" aria-label="Basic example">
+        <button type="button" class="btn btn-success btn-sm mr-1" onclick="activarAps(${row.id_aps})"><i class="fas fa-check"></i></button>
+        </div>
+        `;
+      }
+    };
+
+    const estatus = (data, type, row) => {
+      if (row.estatus_aps == `ACTIVO`) {
+        return `<span class="badge badge-success">${row.estatus_aps}</span>`;
+      } else {
+        return `<span class="badge badge-danger">${row.estatus_aps}</span>`;
+      }
+    };
+
+    $("#apsTable").DataTable({
+      responsive: false,
+      language: {
+        search: "_INPUT_",
+        searchPlaceholder: "Buscar...",
+        lengthMenu: "Mostrar _MENU_ entradas",
+        zeroRecords: "No hay entradas",
+        info: "Mostrando _START_ a _END_ de _TOTAL_ entradas",
+        infoEmpty: "No hay entradas",
+        infoFiltered: "(filtrado de _MAX_ entradas totales)",
+        paginate: {
+          first: "Primero",
+          last: "Último",
+          next: "Siguiente",
+          previous: "Anterior",
+        },
+      },
+      ajax: {
+        url: "../aps/listapsjson",
+        dataSrc: "",
+      },
+      columns: [
+        { data: "id_aps" },
+        { data: "nombre" },
+        { data: "estatus_aps", render: estatus },
+        { data: "fecha_reg" },
+        { data: null, render: acciones },
+      ],
+    });
+  }
+}
+
+function editarRol(id) {
+  document.getElementById("modalTitle").innerHTML = "Editar APS";
+  limpiarFormulario();
   $.ajax({
-    url: datos.url,
-    data: datos.data,
-    type: datos.type,
-    dataType: "json",
-    success: function (res) {
-      switch (datos.accion) {
-        case "update":
-          $(".mensaje_sistema").html(res.res);
-          $(".mensaje").addClass("bg-success");
-          $("#mensajeModal").modal("show");
-          break;
-        case "save":
-          $(".frmGuardar")[0].reset();
-          $(".crearModal").modal("hide");
-          $(".mensaje_sistema").html(res.res);
-          $(".mensaje").addClass("bg-success");
-          $("#mensajeModal").modal("show");
-          console.log(res.res);
+    url: `../aps/getApsJson`,
+    type: "POST",
+    data: { id_aps: id },
+    success: function (response) {
+      var data = JSON.parse(response);
+      document.getElementById("id_aps").value = data.id_aps;
+      document.getElementById("nombre").value = data.nombre;
+    },
+  });
+}
 
-          break;
-        case "delete":
-          $(".estatusAps" + datos.id).removeClass("bg-success");
-          $(".estatusAps" + datos.id).addClass("bg-warning");
-          $(".estatusAps" + datos.id).html("INACTIVO");
+function limpiarFormulario() {
+  document.getElementById("id_aps").value = "";
+  document.getElementById("nombre").value = "";
+}
 
-          break;
+function guardarAps(event) {
+  event.preventDefault();
+  var id_aps = document.getElementById("id_aps").value;
+  var nombre = document.getElementById("nombre").value;
+  $.ajax({
+    url: `../aps/guardarApsJson`,
+    type: "POST",
+    data: {
+      id_aps: id_aps,
+      nombre: nombre,
+    },
+    success: function (response) {
+      console.log(response);
+      var data = JSON.parse(response);
+      if (data.status == "success") {
+        document.getElementById("btnCerrar").click();
+        Swal.fire("¡Éxito!", data.message, "success");
+        $("#apsTable").DataTable().ajax.reload();
+      } else {
+        Swal.fire("¡Error!", data.message, "error");
       }
     },
-    error: function (xhr, estatus) {},
+  });
+  return false;
+}
+
+function desactivarAps(id) {
+  let estatus = 0;
+  Swal.fire({
+    title: "¿Estás seguro?",
+    text: "¡Se desactivará el registro!",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "¡Sí, desactivarlo!",
+  }).then((result) => {
+    if (result.isConfirmed) {
+      $.ajax({
+        url: `../aps/desactivarApsJson`,
+        type: "POST",
+        data: { id_aps: id, estatus: estatus },
+        success: function (response) {
+          var data = JSON.parse(response);
+          if (data.status == "success") {
+            Swal.fire("¡Éxito!", data.message, "success");
+            $("#apsTable").DataTable().ajax.reload();
+          } else {
+            Swal.fire("¡Error!", data.message, "error");
+          }
+        },
+      });
+    }
+  });
+}
+
+function activarAps(id) {
+  let estatus = 1;
+  Swal.fire({
+    title: "¿Estás seguro?",
+    text: "¡Se activará el registro!",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "¡Sí, activarlo!",
+  }).then((result) => {
+    if (result.isConfirmed) {
+      $.ajax({
+        url: `../aps/activarApsJson`,
+        type: "POST",
+        data: { id_aps: id, estatus: estatus },
+        success: function (response) {
+          var data = JSON.parse(response);
+          if (data.status == "success") {
+            Swal.fire("¡Éxito!", data.message, "success");
+            $("#apsTable").DataTable().ajax.reload();
+          } else {
+            Swal.fire("¡Error!", data.message, "error");
+          }
+        },
+      });
+    }
   });
 }

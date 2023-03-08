@@ -1,19 +1,19 @@
 <?php
-class Connection{
-
-    public function __construct()
+class Connection
+{
+    public function connect() // connection renombrarlo a connect
     {
-        
-    }
-
-    public function connection(){
-        $con = mysqli_connect("localhost","root","","sistema_versiones");
-        if(!$con){
-            echo "conexion fallida";
-        }else{
-            return $con;
+        $db = mysqli_connect(DB_HOST, DB_USER, DB_PASS, DB_NAME);
+        if (!$db) {
+            echo "conexión fallida";
+            exit();
+        } else {
+            return $db;
         }
     }
 
+    public function disconnect($db)
+    {
+        mysqli_close($db);
+    }
 }
-?>

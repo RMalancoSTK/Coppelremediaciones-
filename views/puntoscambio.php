@@ -52,15 +52,11 @@
                             <td class="nombrePal<?= $pal ?>" data-id="<?= $pal ?>"><?= $resPalabras['nombre'][$i] ?></td>
                             <td class="nombreLeng<?= $pal ?>" data-id="<?= $pal ?>"><?= $resPalabras['lenguaje'][$i] ?></td>
                             <td>
-                                <i class="editar bi bi-pencil-square btn editar<?= $pal ?>" data-id="<?= $pal ?>"
-                                    data-idlenguaje="<?= $resPalabras['idLeng'][$i] ?>"></i>
+                                <i class="editar bi bi-pencil-square btn editar<?= $pal ?>" data-id="<?= $pal ?>" data-idlenguaje="<?= $resPalabras['idLeng'][$i] ?>"></i>
                                 <i class="eliminar bi bi-trash btn eliminar<?= $pal ?>" data-id="<?= $pal ?>"></i>
 
-                                <i class="save bi bi-check2-circle btn save<?= $pal ?>" data-id="<?= $pal ?>"
-                                    style="display:none"></i>
-                                <i class="cancelar bi bi-x-circle btn cancelar<?= $pal ?>" data-id="<?= $pal ?>"
-                                    style="display:none" data-nombre="<?= $resPalabras['nombre'][$i] ?>"
-                                    data-lenguaje="<?= $resPalabras['lenguaje'][$i]; ?>"></i>
+                                <i class="save bi bi-check2-circle btn save<?= $pal ?>" data-id="<?= $pal ?>" style="display:none"></i>
+                                <i class="cancelar bi bi-x-circle btn cancelar<?= $pal ?>" data-id="<?= $pal ?>" style="display:none" data-nombre="<?= $resPalabras['nombre'][$i] ?>" data-lenguaje="<?= $resPalabras['lenguaje'][$i]; ?>"></i>
                             </td>
                         </tr>
                     <?php } ?>
@@ -76,8 +72,7 @@
                 <div class="modal-footer">
                     <div class="d-flex justify-content-center text-center">
 
-                        <form class="p-5  rounded-lg was-validated" method="post" id="formzip"
-                            enctype="multipart/form-data">
+                        <form class="p-5  rounded-lg was-validated" method="post" id="formzip" enctype="multipart/form-data">
                             <div class="form-group">
                                 <label for="archivos" class="text-black label-st">
                                     <h5>Por favor seleccione/arrastre un archivo ZIP: </h5>
@@ -92,8 +87,7 @@
                                     </div>
 
 
-                                    <input type="file" accept=".zip" class="form-control " id="archivos" required
-                                        name="envioarchivos">
+                                    <input type="file" accept=".zip" class="form-control " id="archivos" required name="envioarchivos">
                                     <!-- "webkitdirectory directory multiple" parametro de html para insertar varios archivos-->
                                     <div class="valid-feedback">Valido</div>
                                     <div class="invalid-feedback">Complete este campo</div>
@@ -102,8 +96,7 @@
                             </div>
                             <!-- <a class="btn btn-primary" href="login">Atras</a> -->
                             <button type="submit" class="btn w-25 btn-primary1 guardarZip">Enviar</button>
-                            <button type="button" class="btn btn-secondary cerrarModal"
-                                data-dismiss="modal">Cerrar</button>
+                            <button type="button" class="btn btn-secondary cerrarModal" data-dismiss="modal">Cerrar</button>
 
 
                         </form>
@@ -113,4 +106,6 @@
         </div>
     </div>
 </div>
-<div id="creartabla"></div>
+<div id='creartabla'>
+
+</div>

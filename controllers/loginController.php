@@ -1,42 +1,45 @@
 <?php
-class loginController{
+require_once("models/loginModel.php");
+
+class LoginController
+{
+    private $loginModel;
 
     public function __construct()
     {
-        require_once("models/loginModel.php");
         $this->loginModel = new LoginModel();
     }
 
-    public function login($datos = null){
-        
-        require_once("views/templates/header.php");
-        require_once("views/login.php");
-        require_once("views/templates/footer.php");
+    public function index()
+    {
+        require_once("views/login/index.php");
     }
 
-    public function validate($datos){
-        
-        if(empty($datos['usuario'])){
-         $data['errorUsuario'] = "Error favor de llenar el campo Usuario";   
+    public function login($datos)
+    {
+        if (!isset($datos['usuario']) || empty($datos['usuario']) || !isset($datos['password']) || empty($datos['password'])) {
+            $_SESSION['error'] = "Usuario y/o contraseña vacíos";
+            header(LOCATION_LOGIN);
+            return;
         }
-        if(empty($datos['pass'])){
-         $data['errorPassword'] = "Error favor de llenar el campo Password";
+        $usuario = Utils::limpiarDatos($datos['usuario']);
+        $password = Utils::limpiarDatos($datos['password']);
+        $data = $this->loginModel->validate($usuario, $password);
+        if (isset($data['errorLogin'])) {
+            $_SESSION['error'] = $data['errorLogin'];
+            header(LOCATION_LOGIN);
+            return;
         }
-        if(isset($data)){
-            $data['usuario'] = $datos['usuario'];
-            $data['pass'] = $datos['pass'];
-            return $data;
-        }
-        $res = $this->loginModel->validate($datos);
-       
-        if(isset($res['id'])){
-            session_start();
-            $_SESSION = $res;
-            header('Location: ../home/dashboard');
-        }else{
-            return $res;
+        $_SESSION['autenticado'] = true;
+        $_SESSION['usuario'] = $data['nombre'];
+        $_SESSION['rol'] = $data['rol'];
+        $_SESSION['id'] = $data['id'];
+        header(LOCATION_BASE_URL);
+    }
 
-        }
+    public function logout()
+    {
+        session_destroy();
+        header(LOCATION_LOGIN);
     }
 }
-?>

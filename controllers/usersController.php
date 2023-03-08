@@ -1,20 +1,23 @@
 <?php
-    require_once(__DIR__.'/../core/coreController.php');
- class usersController extends coreController{
+require_once("models/userModel.php");
+require_once("models/rolModel.php");
+class usersController extends coreController
+{
+    private $js;
+    private $users;
+    private $rol;
+
     public function __construct()
     {
         parent::__construct();
-        $this->js='../assets/js/user.js';
-        
-        require_once("models/userModel.php");
+        $this->js = '../assets/js/user.js';
         $this->users = new userModel();
-
-        require_once("models/rolModel.php");
         $this->rol = new RolModel();
     }
 
-    public function list(){
-       
+    public function list()
+    {
+
         $roles = $this->rol->read();
         $res = $this->users->getusers();
         require_once("views/templates/header.php");
@@ -24,25 +27,25 @@
     }
 
 
-    public function update(){
-        
+    public function update()
+    {
+
         $res = $this->users->update($_POST);
-      $data["res"] = "Tu registro se ha actualizado correctamente";
-      echo json_encode($data); 
+        $data["res"] = "Tu registro se ha actualizado correctamente";
+        echo json_encode($data);
     }
 
-    public function save() {
+    public function save()
+    {
         $id = $this->users->saveUser($_POST);
-        $res = $this->users->saveUserRol($id,$_POST["rol"]);
+        $res = $this->users->saveUserRol($id, $_POST["rol"]);
         $data["res"] = "Registro agregado correctamente";
         echo json_encode($data);
     }
 
-    public function delete() {
+    public function delete()
+    {
         $res = $this->users->deleteUser($_POST["idUser"]);
         echo json_encode($res);
     }
-
-
- }
-?>
+}

@@ -1,18 +1,21 @@
 <?php
 
-class catalogosModel{
+class catalogosModel
+{
+    private $con;
+
     public function __construct()
     {
-        require_once('connection/connection.php');
-        $con = new Connection();
-        $this->con = $con->connection();
+        $this->con = new Connection();
+        $this->con = $this->con->connect();
     }
-    public function getCatalogoEstatus(){
+    public function getCatalogoEstatus()
+    {
         $query = "SELECT * FROM co_catalogo_estatus";
         $res = mysqli_query($this->con, $query);
         $i = 0;
 
-        while($row = mysqli_fetch_assoc($res)) {
+        while ($row = mysqli_fetch_assoc($res)) {
             $data['id'][$i] = $row['id_estatus'];
             $data['estatus'][$i] = $row['estatus'];
             $i++;
@@ -21,4 +24,3 @@ class catalogosModel{
         return $data;
     }
 }
-?>

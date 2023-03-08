@@ -1,18 +1,22 @@
 <?php
-require_once(__DIR__.'/../core/coreController.php');
-class sistemaController extends coreController{
+require_once("models/sistemaModel.php");
+require_once("models/catalogosModel.php");
+
+class sistemaController extends coreController
+{
+    private $js;
+    private $sistema;
+    private $catalogoEstatus;
+
     public function __construct()
     {
         parent::__construct();
-        $this->js='../assets/js/sistema.js';
-
-        require_once("models/sistemaModel.php");
+        $this->js = '../assets/js/sistema.js';
         $this->sistema = new sistemaModel();
-
-        require_once("models/catalogosModel.php");
         $this->catalogoEstatus = new catalogosModel();
     }
-    public function readSistema(){
+    public function readSistema()
+    {
         $res = $this->sistema->getSistema();
         $catalogosEstatus = $this->catalogoEstatus->getCatalogoEstatus();
         require_once("views/templates/header.php");
@@ -21,10 +25,10 @@ class sistemaController extends coreController{
         require_once("views/templates/footer.php");
     }
 
-    public function updateSistema() {
-        $res = $this->sistema->updateSistema( $_POST['idSistema'],$_POST['idEstatus']);
+    public function updateSistema()
+    {
+        $res = $this->sistema->updateSistema($_POST['idSistema'], $_POST['idEstatus']);
         $data['res'] = 'Tu registro se actualizo correctamente';
         echo json_encode($data);
     }
 }
-?>
