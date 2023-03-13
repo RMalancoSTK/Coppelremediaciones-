@@ -10,7 +10,7 @@ class ApsController extends coreController
     public function __construct()
     {
         parent::__construct();
-        $this->js = '<script src="' . BASE_URL . 'assets/js/aps.js"></script>';
+        $this->js = '<script src="assets/js/aps.js"></script>';
         $this->aps = new apsModel();
     }
 
